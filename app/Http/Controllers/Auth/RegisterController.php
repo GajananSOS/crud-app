@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -31,15 +32,25 @@ class RegisterController extends Controller
 
 
         $this->validator($request->all())->validate();
-        $user = $this->create($request->all());
+        $avatar = null;
+        if ($request->hasFile('avatar')) {
+            $img = $request->avatar;
+            $filename = $img->getClientOriginalName();
+            $avatar = Storage::putFileAs('/public/images', $request->file('avatar'), $filename);
+        }
+
+        $user = $this->create(array_merge($request->all(), ['avatar' => $avatar]));
+
+        $token = $user->createToken('authToken')->accessToken;
 
         //login after register
         // $this->guard()->login($user);
+
         return response()->json([
-            'success'=> true,
-            'message'=>'user registered successfully.'
-            ], 200);
-        
+            'success' => true,
+            'message' => 'user registered successfully.',
+            'token' => $token
+        ], 200);
     }
     /**
      * Where to redirect users after registration.
@@ -71,8 +82,8 @@ class RegisterController extends Controller
             'avatar' => ['nullable'],
             'username' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'companyName'=> ['nullable'],
-            'mobile_no' => ['nullable'],
+            'companyName' => ['nullable'],
+            'mobile_no' => ['nullable', 'digits:10'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
@@ -87,10 +98,10 @@ class RegisterController extends Controller
     {
         // dd($data);
         return User::create([
-            'avatar' => 'avatar',
+            'avatar' => $data['avatar'],
             'username' => $data['username'],
             'email' => $data['email'],
-            'company_name'=> $data['companyName'],
+            'company_name' => $data['companyName'],
             'mobile_no' => $data['mobile_no'],
             'password' => Hash::make($data['password']),
         ]);

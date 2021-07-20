@@ -11,29 +11,22 @@
                         </ul>
                     </div>
                     <div class="container">
-                      <div class="col-lg-8
-                           m-auto d-block">
+                      <div class="col-lg-8 m-auto d-block">
                         <form action="" method="POST" enctype="multipart/form-data" id="reg-form">
-                                <div class="form-group">
-                                  <label for="avatar">Avatar</label>
-                                  <input type="file" name="avatar" class="form-control-file" id="avatar">
-                                </div>
-                          <div class="form-group">
-                              <label for ="username">
-                                Username:
-                              </label>
-                              <input type="text"
-                                    name="username" id="username"
-                                    class="form-control">
-                              <span class="text-danger" id="username-err"></span>
-                          </div>
+                            <div class="form-group">
+                                <label for="avatar">Avatar</label>
+                                <input type="file" name="avatar" class="form-control-file" id="avatar">
+                            </div>
+                            <div class="form-group">
+                                <label for ="username">Username:</label>
+                                <input type="text" name="username" id="username" class="form-control">
+                                <span class="text-danger" id="username-err"></span>
+                            </div>
                           <div class="form-group">
                               <label for="user">
                                     Email:
                               </label>
-                              <input type="email" name="email"
-                                id="email"
-                                class="form-control">
+                              <input type="text" name="email" id="email" class="form-control">
                                 <span class="text-danger" id="emailvalid"></span>
                                   @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -127,14 +120,14 @@ $(document).ready(function () {
                 },
                 error: function(err){
                     var errors = err.responseJSON.errors;
-                    
+
                     console.log(err.responseJSON.errors);
                         $.each(errors, function(key, val){
                             console.log(val);
                              var li = `<li>${val[0]}</li>`;
-                             $('#errors').html(li);
+                             $('#errors').append(li);
                         });
-                    
+
                     $('.alert').removeClass('d-none');
                     $('.alert').alert();
                 }
@@ -146,43 +139,49 @@ $(document).ready(function () {
 });
 
 function validateForm(inputData){
+
     if (inputData.get('username') == '') {
         $('#username-err').text('Please Enter username');
         return false;
     }else{
-        console.log(inputData.get('username'));
+
         $('#username-err').text('');
     }
 
     if (inputData.get('email') == '') {
         $('#emailvalid').text('Please Enter email');
         return false;
+    }else if(!(inputData.get('email').indexOf("@") > 0)){
+        $('#emailvalid').text('Enter valid email address');
     }else{
-        console.log(inputData.get('email'));
         $('#emailvalid').text('');
+
     }
-    if (inputData.get('mobile_no') == '') {
-        $('#mobileValid').text('Please Enter mobileno');
+
+    if (inputData.get('mobile_no') == ''  ) {
+        $('#mobileValid').text('Please Enter Mobile Number');
         return false;
+    }else if(inputData.get('mobile_no').length != 10){
+        $('#mobileValid').text('Mobile no must be 10 digits');
     }else{
-        console.log(inputData.get('mobile_no'));
+
         $('#mobileValid').text('');
     }
+
     if (inputData.get('password') == '') {
         $('#passwordvalid').text('Please Enter password');
         return false;
     }else{
-        console.log(inputData.get('password'));
         $('#passwordvalid').text('');
     }
+
     if (inputData.get('password_confirmation') == '') {
         $('#confirmPsd').text('Please Enter confirm password');
         return false;
     }else{
-        console.log(inputData.get('password'));
         $('#confirmPsd').text('');
     }
-    console.log('sdf');
+
     return true;
 }
 
